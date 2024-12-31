@@ -81,14 +81,14 @@
 //-----------------------------------------------------------------------------
 }
 
-
+// linha 590, 760, 1118, 1733, 2023
+var menos = 51;
 var canvas;
 var context;
 var svg; // for snapshot mode
 var collapse = true;
 var collapseCheckBox;
 var collapseLast;
-var showMagnitude = false;
 var compress;
 var compressCheckBox;
 var maxAbsoluteDepthText;
@@ -116,7 +116,6 @@ var searchResults;
 var nSearchResults;
 var useHueCheckBox;
 var useHueDiv;
-var showMagnitudeCheckBox;
 var datasetDropDown;
 var datasetButtonLast;
 var datasetButtonPrev;
@@ -589,7 +588,7 @@ function Node()
 		if ( ! highlighted && this != selectedNode && ! this.getCollapse() )
 		{
 			context.beginPath();
-			context.arc(0, 0, radiusInner, angleStartCurrent, angleEndCurrent, false);
+			context.arc(0, 0, radiusInner-menos, angleStartCurrent, angleEndCurrent, false);
 			context.arc(0, 0, gRadius, angleEndCurrent, angleStartCurrent, true);
 			context.closePath();
 			
@@ -759,6 +758,11 @@ function Node()
 			}
 		}
 */		
+
+        if (radiusInner - menos > 0)
+            radiusInner = radiusInner - menos;
+
+
 		var drawChildren =
 			( ! this.hide || ! this.hidePrev && progress < 1 ) &&
 			( ! this.hideAlone || ! this.hideAlonePrev && progress < 1 );
@@ -1112,6 +1116,9 @@ function Node()
 		var angleEnd = lastChild.angleEnd.current() + rotationOffset;
 		var radiusInner = gRadius * firstChild.radiusInner.current();
 		var hiddenChildren = firstChild.hiddenEnd - firstHiddenChild + 1;
+
+        if (radiusInner - menos > 0)
+            radiusInner = radiusInner - menos;
 		
 		if ( labelMode )
 		{
@@ -1723,12 +1730,20 @@ function Node()
 		else
 		{
 			label = this.name;
+            // console.log(label);
 		}
-		
-		if (showMagnitude)
-		{
-    		label += ' [' + this.magnitude + ']'
-    	}
+
+        if (label == 'Peperomia'){
+            console.log(radius);
+            radius = radius - 90;
+
+        } else {
+
+            if (radius - menos > 0)
+                radius = radius - 60;
+
+        }
+
 		
 		var flipped = drawTextPolar
 		(
@@ -2017,6 +2032,8 @@ function Node()
 		else
 		{
 			context.globalAlpha = 1 - this.alphaLine.current();//this.getUncollapsed().alphaLine.current();
+            if (childRadiusInner - 50 > 0)
+                childRadiusInner = childRadiusInner - 50;
 			context.beginPath();
 			context.arc(0, 0, childRadiusInner, 0, Math.PI * 2, false);
 			context.stroke();
@@ -3689,13 +3706,6 @@ and including collapsed wedges.'
 	position = addOptionElement
 	(
 		position,
-		'<input type="checkbox" id="showMagnitude" checked="checked" />Show magnitudes',
-		'Show magnitudes in labels'
-	);
-	
-	position = addOptionElement
-	(
-		position,
 		'<input type="checkbox" id="collapse" checked="checked" />Collapse',
 		'Collapse wedges that are redundant (entirely composed of another wedge)'
 	);
@@ -4639,7 +4649,6 @@ function showLink()
 		getGetString('dataset', currentDataset, false),
 		getGetString('node', selectedNode.id, false),
 		getGetString('collapse', collapse, true),
-		getGetString('showMagnitude', showMagnitude, true),
 		getGetString('color', useHue(), true),
 		getGetString('depth', maxAbsoluteDepth - 1, false),
 		getGetString('font', fontSize, false),
@@ -5085,10 +5094,6 @@ function load()
 			{
 				case 'collapse':
 					collapse = pair[1] == 'true';
-					break;
-				
-				case 'showMagnitude':
-					showMagnitude = pair[1] == 'true';
 					break;
 				
 				case 'color':
@@ -5721,9 +5726,6 @@ function setCallBacks()
 	canvas.onmousedown = mouseClick;
 	document.onmouseup = mouseUp;
 	keyControl.onclick = toggleKeys;
-	showMagnitudeCheckBox = document.getElementById('showMagnitude');
-	showMagnitudeCheckBox.checked = showMagnitude;
-	showMagnitudeCheckBox.onclick = handleResize;
 	collapseCheckBox = document.getElementById('collapse');
 	collapseCheckBox.checked = collapse;
 	collapseCheckBox.onclick = handleResize;
@@ -6243,7 +6245,6 @@ function update()
 		mouseY = -1;
 		
 		collapse = collapseCheckBox.checked;
-		showMagnitude = showMagnitudeCheckBox.checked;
 		compress = true;//compressCheckBox.checked;
 		shorten = true;//shortenCheckBox.checked;
 		
@@ -6554,8 +6555,7 @@ function updateView()
 	}
 	
 	fontSizeText.innerHTML = fontSize;
-	// fontNormal = fontSize + 'px ' + fontFamily;
-	fontNormal = 'italic ' + fontSize + 'px ' + fontFamily;
+	fontNormal = fontSize + 'px ' + fontFamily;
 	context.font = fontNormal;
 	fontBold = 'bold ' + fontSize + 'px ' + fontFamily;
 	tickLength = fontSize * .7;
@@ -6625,11 +6625,6 @@ function useHue()
 {
 	return useHueCheckBox && useHueCheckBox.checked;
 }
-
-function showMagnitudes()
-{
-	return showMagnitudesCheckBox && showMagnitudesCheckBox.checked;
-}
 /*
 function zoomOut()
 {
@@ -6652,711 +6647,725 @@ function zoomOut()
     <attribute display="Unassigned">magnitudeUnassigned</attribute>
    </attributes>
    <datasets>
-    <dataset>kronab</dataset>
+    <dataset>test</dataset>
    </datasets>
-<node name="Piperaceae">
- <magnitudeUnassigned><val>155</val></magnitudeUnassigned>
- <magnitude><val>10503</val></magnitude>
- <node name="Piper">
-  <magnitude><val>7678</val></magnitude>
-  <node name="Piper baccans">
-   <magnitude><val>20</val></magnitude>
+<node name="all">
+ <magnitude><val>10514</val></magnitude>
+ <node name="Piperaceae">
+  <magnitude><val>10514</val></magnitude>
+  <node name="Peperomia">
+   <magnitude><val>2807</val></magnitude>
+   <node name="delicatula">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="macrostachya">
+    <magnitude><val>170</val></magnitude>
+   </node>
+   <node name="hispidula">
+    <magnitude><val>33</val></magnitude>
+   </node>
+   <node name="fluviatilis">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="augescens">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="cowanii">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="minensis">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="galioides">
+    <magnitude><val>76</val></magnitude>
+   </node>
+   <node name="arifolia">
+    <magnitude><val>46</val></magnitude>
+   </node>
+   <node name="barbarana">
+    <magnitude><val>12</val></magnitude>
+   </node>
+   <node name="quadrifolia">
+    <magnitude><val>11</val></magnitude>
+   </node>
+   <node name="magnoliifolia">
+    <magnitude><val>35</val></magnitude>
+   </node>
+   <node name="rotundifolia">
+    <magnitude><val>92</val></magnitude>
+   </node>
+   <node name="nematostachya">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="glabella">
+    <magnitude><val>182</val></magnitude>
+   </node>
+   <node name="renifolia">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="trineura">
+    <magnitude><val>37</val></magnitude>
+   </node>
+   <node name="radicosa">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="rhombea">
+    <magnitude><val>12</val></magnitude>
+   </node>
+   <node name="lyman-smithii">
+    <magnitude><val>12</val></magnitude>
+   </node>
+   <node name="duartei">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="elongata">
+    <magnitude><val>75</val></magnitude>
+   </node>
+   <node name="subternifolia">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="pellucida">
+    <magnitude><val>49</val></magnitude>
+   </node>
+   <node name="hilariana">
+    <magnitude><val>28</val></magnitude>
+   </node>
+   <node name="glaziovii">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="victoriana">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="serratirhachis">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="emarginella">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="gardneriana">
+    <magnitude><val>17</val></magnitude>
+   </node>
+   <node name="stroemfeltii">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="crinicaulis">
+    <magnitude><val>27</val></magnitude>
+   </node>
+   <node name="pereirae">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="clivicola">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="obtusifolia">
+    <magnitude><val>54</val></magnitude>
+   </node>
+   <node name="diaphanoides">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="campinasana">
+    <magnitude><val>17</val></magnitude>
+   </node>
+   <node name="subretusa">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="tenella">
+    <magnitude><val>11</val></magnitude>
+   </node>
+   <node name="megapotamica">
+    <magnitude><val>18</val></magnitude>
+   </node>
+   <node name="dahlstedtii">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="alata">
+    <magnitude><val>81</val></magnitude>
+   </node>
+   <node name="urocarpa">
+    <magnitude><val>204</val></magnitude>
+   </node>
+   <node name="nitida">
+    <magnitude><val>31</val></magnitude>
+   </node>
+   <node name="tetraphylla">
+    <magnitude><val>330</val></magnitude>
+   </node>
+   <node name="pseudoestrellensis">
+    <magnitude><val>44</val></magnitude>
+   </node>
+   <node name="armondii">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="glazioui">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="oreophila">
+    <magnitude><val>30</val></magnitude>
+   </node>
+   <node name="subrubrispica">
+    <magnitude><val>33</val></magnitude>
+   </node>
+   <node name="subrubricaulis">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="circinnata">
+    <magnitude><val>58</val></magnitude>
+   </node>
+   <node name="blanda">
+    <magnitude><val>113</val></magnitude>
+   </node>
+   <node name="warmingii">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="trineuroides">
+    <magnitude><val>18</val></magnitude>
+   </node>
+   <node name="loxensis">
+    <magnitude><val>29</val></magnitude>
+   </node>
+   <node name="decora">
+    <magnitude><val>38</val></magnitude>
+   </node>
+   <node name="hydrocotyloides">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="quadrangularis">
+    <magnitude><val>29</val></magnitude>
+   </node>
+   <node name="martiana">
+    <magnitude><val>46</val></magnitude>
+   </node>
+   <node name="castelosensis">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="velloziana">
+    <magnitude><val>22</val></magnitude>
+   </node>
+   <node name="magnifoliiflora">
+    <magnitude><val>17</val></magnitude>
+   </node>
+   <node name="ouabianae">
+    <magnitude><val>15</val></magnitude>
+   </node>
+   <node name="spruceana">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="pereskiaefolia">
+    <magnitude><val>40</val></magnitude>
+   </node>
+   <node name="corcovadensis">
+    <magnitude><val>134</val></magnitude>
+   </node>
+   <node name="hernandiifolia">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="serpens">
+    <magnitude><val>57</val></magnitude>
+   </node>
+   <node name="catharinae">
+    <magnitude><val>60</val></magnitude>
+   </node>
+   <node name="pereskiifolia">
+    <magnitude><val>20</val></magnitude>
+   </node>
+   <node name="uaupesensis">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="sincorana">
+    <magnitude><val>47</val></magnitude>
+   </node>
+   <node name="rubricaulis">
+    <magnitude><val>21</val></magnitude>
+   </node>
+   <node name="divaricata">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="rupestris">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="glaziovi">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="psilostachya">
+    <magnitude><val>12</val></magnitude>
+   </node>
   </node>
-  <node name="Piper umbellata">
-   <magnitude><val>18</val></magnitude>
-  </node>
-  <node name="Piper caldasianum">
-   <magnitude><val>15</val></magnitude>
-  </node>
-  <node name="Piper dumosum">
-   <magnitude><val>53</val></magnitude>
-  </node>
-  <node name="Piper peltata">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper vermiculatum">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Piper renitens">
-   <magnitude><val>18</val></magnitude>
-  </node>
-  <node name="Piper rupununianum">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper michelianum">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper francovilleanum">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper cachimboense">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Piper fonteboanum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper callosum">
-   <magnitude><val>59</val></magnitude>
-  </node>
-  <node name="Piper enckea">
-   <magnitude><val>11</val></magnitude>
-  </node>
-  <node name="Piper javariense">
-   <magnitude><val>11</val></magnitude>
-  </node>
-  <node name="Piper piscatorum">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Piper grande">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper truncatum">
-   <magnitude><val>24</val></magnitude>
-  </node>
-  <node name="Piper pulleanum">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Piper cyrtopodon">
-   <magnitude><val>38</val></magnitude>
-  </node>
-  <node name="Piper hayneanum">
+  <node name="Manekia">
    <magnitude><val>19</val></magnitude>
-  </node>
-  <node name="Piper fuligineum">
-   <magnitude><val>177</val></magnitude>
-  </node>
-  <node name="Piper hemmendorffii">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper humaytanum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper lucaeanum">
-   <magnitude><val>33</val></magnitude>
-  </node>
-  <node name="Piper hispidinervum">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper demeraranum">
-   <magnitude><val>58</val></magnitude>
-  </node>
-  <node name="Piper rhododendrifolium">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper cubataonum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper coccoloboides">
-   <magnitude><val>21</val></magnitude>
-  </node>
-  <node name="Piper alnoides">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper ulei">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper eucalyptophyllum">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper limai">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Piper madeiranum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper concinnatoris">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Piper pseudolanceolatum">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper vitaceum">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Piper reticulatum">
-   <magnitude><val>37</val></magnitude>
-  </node>
-  <node name="Piper curtistilum">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper amplum">
-   <magnitude><val>122</val></magnitude>
-  </node>
-  <node name="Piper piresii">
-   <magnitude><val>36</val></magnitude>
-  </node>
-  <node name="Piper amalago">
-   <magnitude><val>286</val></magnitude>
-  </node>
-  <node name="Piper consanguineum">
-   <magnitude><val>41</val></magnitude>
-  </node>
-  <node name="Piper heterophyllum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper flavicans">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Piper regnellii">
-   <magnitude><val>120</val></magnitude>
-  </node>
-  <node name="Piper schenkii">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper coruscans">
-   <magnitude><val>15</val></magnitude>
-  </node>
-  <node name="Piper dilatatum">
-   <magnitude><val>171</val></magnitude>
-  </node>
-  <node name="Piper manausense">
-   <magnitude><val>62</val></magnitude>
-  </node>
-  <node name="Piper cililimbum">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper ilheusense">
-   <magnitude><val>44</val></magnitude>
-  </node>
-  <node name="Piper hostmannianum">
-   <magnitude><val>144</val></magnitude>
-  </node>
-  <node name="Piper nigrispicum">
-   <magnitude><val>22</val></magnitude>
-  </node>
-  <node name="Piper lhotzkianum">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper permucronatum">
-   <magnitude><val>40</val></magnitude>
-  </node>
-  <node name="Piper grazielae">
-   <magnitude><val>202</val></magnitude>
-  </node>
-  <node name="Piper silvigaudens">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper mosenii">
-   <magnitude><val>20</val></magnitude>
-  </node>
-  <node name="Piper stellipilum">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper solmsianum">
-   <magnitude><val>116</val></magnitude>
-  </node>
-  <node name="Piper hispidum">
-   <magnitude><val>331</val></magnitude>
-  </node>
-  <node name="Piper amazonicum">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper duckei">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper lepturum">
-   <magnitude><val>35</val></magnitude>
-  </node>
-  <node name="Piper gurupanum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper wachenheimii">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper amapense">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Piper schottii">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper longipes">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper pubisubmarginalum">
-   <magnitude><val>15</val></magnitude>
-  </node>
-  <node name="Piper ovatum">
-   <magnitude><val>124</val></magnitude>
-  </node>
-  <node name="Piper belterraense">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Piper mourai">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper mollicomum">
-   <magnitude><val>197</val></magnitude>
-  </node>
-  <node name="Piper jubimarginatum">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper tuberculatum">
-   <magnitude><val>160</val></magnitude>
-  </node>
-  <node name="Piper tectoniifolium">
-   <magnitude><val>68</val></magnitude>
-  </node>
-  <node name="Piper caldense">
-   <magnitude><val>167</val></magnitude>
-  </node>
-  <node name="Piper carniconnectivum">
-   <magnitude><val>30</val></magnitude>
-  </node>
-  <node name="Piper augustum">
-   <magnitude><val>20</val></magnitude>
-  </node>
-  <node name="Piper miquelianum">
-   <magnitude><val>187</val></magnitude>
-  </node>
-  <node name="Piper bowiei">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper emygdioi">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper uleanum">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper tridentipilum">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper durilignum">
-   <magnitude><val>23</val></magnitude>
-  </node>
-  <node name="Piper glabratum">
-   <magnitude><val>132</val></magnitude>
-  </node>
-  <node name="Piper divaricatum">
-   <magnitude><val>142</val></magnitude>
-  </node>
-  <node name="Piper chimonanthifolium">
-   <magnitude><val>29</val></magnitude>
-  </node>
-  <node name="Piper lanceolatum">
-   <magnitude><val>16</val></magnitude>
-  </node>
-  <node name="Piper subglabrifolium">
-   <magnitude><val>16</val></magnitude>
-  </node>
-  <node name="Piper plurinervosum">
-   <magnitude><val>11</val></magnitude>
-  </node>
-  <node name="Piper schenckii">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Piper rivinoides">
-   <magnitude><val>81</val></magnitude>
-  </node>
-  <node name="Piper nudilimbum">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Piper macedoi">
-   <magnitude><val>52</val></magnitude>
-  </node>
-  <node name="Piper viminifolium">
-   <magnitude><val>29</val></magnitude>
-  </node>
-  <node name="Piper erectipilum">
-   <magnitude><val>46</val></magnitude>
-  </node>
-  <node name="Piper alatabaccum">
-   <magnitude><val>28</val></magnitude>
-  </node>
-  <node name="Piper anisum">
-   <magnitude><val>95</val></magnitude>
-  </node>
-  <node name="Piper guianense">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Piper schwackei">
-   <magnitude><val>21</val></magnitude>
-  </node>
-  <node name="Piper diospyrifolium">
-   <magnitude><val>18</val></magnitude>
-  </node>
-  <node name="Piper chavicoide">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper rioense">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper froesii">
-   <magnitude><val>11</val></magnitude>
-  </node>
-  <node name="Piper anonifolium">
-   <magnitude><val>84</val></magnitude>
-  </node>
-  <node name="Piper reitzii">
-   <magnitude><val>25</val></magnitude>
-  </node>
-  <node name="Piper ottonoides">
-   <magnitude><val>24</val></magnitude>
-  </node>
-  <node name="Piper aduncum">
-   <magnitude><val>377</val></magnitude>
-  </node>
-  <node name="Piper japurense">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper klotzschianum">
-   <magnitude><val>19</val></magnitude>
-  </node>
-  <node name="Piper dactylostigmum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper marginatum">
-   <magnitude><val>56</val></magnitude>
-  </node>
-  <node name="Piper obliquum">
-   <magnitude><val>67</val></magnitude>
-  </node>
-  <node name="Piper brasiliense">
-   <magnitude><val>23</val></magnitude>
-  </node>
-  <node name="Piper krukoffii">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Piper gigantifolium">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper mollipilosum">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Piper abutiloides">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper chumboense">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper laevigatum">
-   <magnitude><val>15</val></magnitude>
-  </node>
-  <node name="Piper bartlingianum">
-   <magnitude><val>144</val></magnitude>
-  </node>
-  <node name="Piper xylosteoides">
-   <magnitude><val>192</val></magnitude>
-  </node>
-  <node name="Piper richardiifolium">
-   <magnitude><val>31</val></magnitude>
-  </node>
-  <node name="Piper vicosanum">
-   <magnitude><val>43</val></magnitude>
-  </node>
-  <node name="Piper cernuum">
-   <magnitude><val>126</val></magnitude>
-  </node>
-  <node name="Piper umbellatum">
-   <magnitude><val>72</val></magnitude>
-  </node>
-  <node name="Piper pellitum">
-   <magnitude><val>43</val></magnitude>
-  </node>
-  <node name="Piper piritubanum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper crassinervium">
-   <magnitude><val>126</val></magnitude>
-  </node>
-  <node name="Piper pseudoarboreum">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Piper subfalcatum">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper lindbergii">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Piper hoffmannseggianum">
-   <magnitude><val>49</val></magnitude>
-  </node>
-  <node name="Piper lhotzkyanum">
-   <magnitude><val>40</val></magnitude>
-  </node>
-  <node name="Piper aleyreanum">
-   <magnitude><val>45</val></magnitude>
-  </node>
-  <node name="Piper malacophyllum">
-   <magnitude><val>53</val></magnitude>
-  </node>
-  <node name="Piper glabrescens">
-   <magnitude><val>37</val></magnitude>
-  </node>
-  <node name="Piper purusanum">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Piper mastersianum">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Piper cuyabanum">
-   <magnitude><val>56</val></magnitude>
-  </node>
-  <node name="Piper gaudichaudianum">
-   <magnitude><val>384</val></magnitude>
-  </node>
-  <node name="Piper arboreum">
-   <magnitude><val>620</val></magnitude>
-  </node>
-  <node name="Piper aequale">
-   <magnitude><val>30</val></magnitude>
-  </node>
-  <node name="Piper monostigmum">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Piper mikanianum">
-   <magnitude><val>93</val></magnitude>
-  </node>
-  <node name="Piper striatifolium">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper glandulosissimum">
-   <magnitude><val>30</val></magnitude>
-  </node>
-  <node name="Piper subcinereum">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Piper peltatum">
-   <magnitude><val>54</val></magnitude>
-  </node>
-  <node name="Piper cunninghamii">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Piper subsilvestre">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Piper pseudopothifolium">
-   <magnitude><val>6</val></magnitude>
-  </node>
- </node>
- <node name="Peperomia">
-  <magnitude><val>2670</val></magnitude>
-  <node name="Peperomia trineura">
-   <magnitude><val>37</val></magnitude>
-  </node>
-  <node name="Peperomia uaupesensis">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Peperomia serratirhachis">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia clivicola">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Peperomia subretusa">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Peperomia crinicaulis">
-   <magnitude><val>27</val></magnitude>
-  </node>
-  <node name="Peperomia subrubricaulis">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Peperomia augescens">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Peperomia oreophila">
-   <magnitude><val>30</val></magnitude>
-  </node>
-  <node name="Peperomia sincorana">
-   <magnitude><val>47</val></magnitude>
-  </node>
-  <node name="Peperomia emarginella">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Peperomia renifolia">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Peperomia elongata">
-   <magnitude><val>75</val></magnitude>
-  </node>
-  <node name="Peperomia hispidula">
-   <magnitude><val>33</val></magnitude>
-  </node>
-  <node name="Peperomia rhombea">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Peperomia tenella">
-   <magnitude><val>11</val></magnitude>
-  </node>
-  <node name="Peperomia corcovadensis">
-   <magnitude><val>134</val></magnitude>
-  </node>
-  <node name="Peperomia hernandiifolia">
-   <magnitude><val>13</val></magnitude>
-  </node>
-  <node name="Peperomia pellucida">
-   <magnitude><val>49</val></magnitude>
-  </node>
-  <node name="Peperomia glabella">
-   <magnitude><val>182</val></magnitude>
-  </node>
-  <node name="Peperomia trineuroides">
-   <magnitude><val>18</val></magnitude>
-  </node>
-  <node name="Peperomia pereskiifolia">
-   <magnitude><val>20</val></magnitude>
-  </node>
-  <node name="Peperomia magnifoliiflora">
-   <magnitude><val>17</val></magnitude>
-  </node>
-  <node name="Peperomia minensis">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Peperomia quadrifolia">
-   <magnitude><val>11</val></magnitude>
-  </node>
-  <node name="Peperomia cowanii">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Peperomia megapotamica">
-   <magnitude><val>18</val></magnitude>
-  </node>
-  <node name="Peperomia lyman-smithii">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Peperomia psilostachya">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Peperomia spruceana">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Peperomia hilariana">
-   <magnitude><val>28</val></magnitude>
-  </node>
-  <node name="Peperomia victoriana">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia serpens">
-   <magnitude><val>57</val></magnitude>
-  </node>
-  <node name="Peperomia warmingii">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Peperomia blanda">
-   <magnitude><val>113</val></magnitude>
-  </node>
-  <node name="Peperomia gardneriana">
-   <magnitude><val>16</val></magnitude>
-  </node>
-  <node name="Peperomia pereskiaefolia">
-   <magnitude><val>40</val></magnitude>
-  </node>
-  <node name="Peperomia quadrangularis">
-   <magnitude><val>29</val></magnitude>
-  </node>
-  <node name="Peperomia rotundifolia">
-   <magnitude><val>92</val></magnitude>
-  </node>
-  <node name="Peperomia diaphanoides">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Peperomia duartei">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia rupestris">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Peperomia subternifolia">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Peperomia magnoliifolia">
-   <magnitude><val>35</val></magnitude>
-  </node>
-  <node name="Peperomia urocarpa">
-   <magnitude><val>203</val></magnitude>
-  </node>
-  <node name="Peperomia subrubrispica">
-   <magnitude><val>33</val></magnitude>
-  </node>
-  <node name="Peperomia campinasana">
-   <magnitude><val>16</val></magnitude>
-  </node>
-  <node name="Peperomia schwackei">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia glazioui">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Peperomia stroemfeltii">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia delicatula">
-   <magnitude><val>10</val></magnitude>
-  </node>
-  <node name="Peperomia pseudoestrellensis">
-   <magnitude><val>44</val></magnitude>
-  </node>
-  <node name="Peperomia macrostachya">
-   <magnitude><val>170</val></magnitude>
-  </node>
-  <node name="Peperomia glaziovi">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia divaricata">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia obtusifolia">
-   <magnitude><val>54</val></magnitude>
-  </node>
-  <node name="Peperomia radicosa">
-   <magnitude><val>14</val></magnitude>
-  </node>
-  <node name="Peperomia galioides">
-   <magnitude><val>76</val></magnitude>
-  </node>
-  <node name="Peperomia barbarana">
-   <magnitude><val>12</val></magnitude>
-  </node>
-  <node name="Peperomia nitida">
-   <magnitude><val>31</val></magnitude>
-  </node>
-  <node name="Peperomia decora">
-   <magnitude><val>38</val></magnitude>
-  </node>
-  <node name="Peperomia ouabianae">
-   <magnitude><val>15</val></magnitude>
-  </node>
-  <node name="Peperomia rubricaulis">
-   <magnitude><val>21</val></magnitude>
-  </node>
-  <node name="Peperomia tetraphylla">
-   <magnitude><val>330</val></magnitude>
-  </node>
-  <node name="Peperomia fluviatilis">
-   <magnitude><val>7</val></magnitude>
-  </node>
-  <node name="Peperomia circinnata">
-   <magnitude><val>58</val></magnitude>
-  </node>
-  <node name="Peperomia loxensis">
-   <magnitude><val>29</val></magnitude>
-  </node>
-  <node name="Peperomia nematostachya">
-   <magnitude><val>8</val></magnitude>
-  </node>
-  <node name="Peperomia martiana">
-   <magnitude><val>46</val></magnitude>
-  </node>
-  <node name="Peperomia hydrocotyloides">
-   <magnitude><val>9</val></magnitude>
-  </node>
-  <node name="Peperomia catharinae">
-   <magnitude><val>60</val></magnitude>
-  </node>
-  <node name="Peperomia glaziovii">
-   <magnitude><val>6</val></magnitude>
-  </node>
-  <node name="Peperomia castelosensis">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia pereirae">
-   <magnitude><val>5</val></magnitude>
-  </node>
-  <node name="Peperomia velloziana">
-   <magnitude><val>22</val></magnitude>
-  </node>
-  <node name="Peperomia dahlstedtii">
-   <magnitude><val>14</val></magnitude>
+   <node name="obtusa">
+    <magnitude><val>19</val></magnitude>
+   </node>
+  </node>
+  <node name="Piper">
+   <magnitude><val>7688</val></magnitude>
+   <node name="hoffmannseggianum">
+    <magnitude><val>49</val></magnitude>
+   </node>
+   <node name="lhotzkyanum">
+    <magnitude><val>40</val></magnitude>
+   </node>
+   <node name="wachenheimii">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="pseudopothifolium">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="michelianum">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="pellitum">
+    <magnitude><val>43</val></magnitude>
+   </node>
+   <node name="truncatum">
+    <magnitude><val>24</val></magnitude>
+   </node>
+   <node name="cernuum">
+    <magnitude><val>126</val></magnitude>
+   </node>
+   <node name="purusanum">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="anisum">
+    <magnitude><val>95</val></magnitude>
+   </node>
+   <node name="consanguineum">
+    <magnitude><val>41</val></magnitude>
+   </node>
+   <node name="vermiculatum">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="lepturum">
+    <magnitude><val>35</val></magnitude>
+   </node>
+   <node name="abutiloides">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="ovatum">
+    <magnitude><val>124</val></magnitude>
+   </node>
+   <node name="silvigaudens">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="hispidum">
+    <magnitude><val>331</val></magnitude>
+   </node>
+   <node name="piscatorum">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="striatifolium">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="tectoniifolium">
+    <magnitude><val>68</val></magnitude>
+   </node>
+   <node name="japurense">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="cyrtopodon">
+    <magnitude><val>38</val></magnitude>
+   </node>
+   <node name="bartlingianum">
+    <magnitude><val>144</val></magnitude>
+   </node>
+   <node name="dilatatum">
+    <magnitude><val>171</val></magnitude>
+   </node>
+   <node name="viminifolium">
+    <magnitude><val>29</val></magnitude>
+   </node>
+   <node name="caldasianum">
+    <magnitude><val>15</val></magnitude>
+   </node>
+   <node name="pseudolanceolatum">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="lanceolatum">
+    <magnitude><val>16</val></magnitude>
+   </node>
+   <node name="madeiranum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="ilheusense">
+    <magnitude><val>44</val></magnitude>
+   </node>
+   <node name="reitzii">
+    <magnitude><val>25</val></magnitude>
+   </node>
+   <node name="chumboense">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="baccans">
+    <magnitude><val>20</val></magnitude>
+   </node>
+   <node name="jubimarginatum">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="cachimboense">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="mikanianum">
+    <magnitude><val>93</val></magnitude>
+   </node>
+   <node name="guianense">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="glandulosissimum">
+    <magnitude><val>30</val></magnitude>
+   </node>
+   <node name="macedoi">
+    <magnitude><val>52</val></magnitude>
+   </node>
+   <node name="cubataonum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="schwackei">
+    <magnitude><val>26</val></magnitude>
+   </node>
+   <node name="lindbergii">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="vicosanum">
+    <magnitude><val>43</val></magnitude>
+   </node>
+   <node name="divaricatum">
+    <magnitude><val>142</val></magnitude>
+   </node>
+   <node name="coruscans">
+    <magnitude><val>15</val></magnitude>
+   </node>
+   <node name="gigantifolium">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="arboreum">
+    <magnitude><val>620</val></magnitude>
+   </node>
+   <node name="eucalyptophyllum">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="mollicomum">
+    <magnitude><val>198</val></magnitude>
+   </node>
+   <node name="ulei">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="klotzschianum">
+    <magnitude><val>19</val></magnitude>
+   </node>
+   <node name="vitaceum">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="schenckii">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="subglabrifolium">
+    <magnitude><val>16</val></magnitude>
+   </node>
+   <node name="hostmannianum">
+    <magnitude><val>144</val></magnitude>
+   </node>
+   <node name="callosum">
+    <magnitude><val>59</val></magnitude>
+   </node>
+   <node name="amazonicum">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="umbellata">
+    <magnitude><val>18</val></magnitude>
+   </node>
+   <node name="pubisubmarginalum">
+    <magnitude><val>15</val></magnitude>
+   </node>
+   <node name="renitens">
+    <magnitude><val>18</val></magnitude>
+   </node>
+   <node name="dactylostigmum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="rivinoides">
+    <magnitude><val>81</val></magnitude>
+   </node>
+   <node name="aleyreanum">
+    <magnitude><val>45</val></magnitude>
+   </node>
+   <node name="pulleanum">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="piritubanum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="flavicans">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="subcinereum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="augustum">
+    <magnitude><val>20</val></magnitude>
+   </node>
+   <node name="rioense">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="mourai">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="xylosteoides">
+    <magnitude><val>192</val></magnitude>
+   </node>
+   <node name="curtistilum">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="hispidinervum">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="ottonoides">
+    <magnitude><val>24</val></magnitude>
+   </node>
+   <node name="subfalcatum">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="carniconnectivum">
+    <magnitude><val>30</val></magnitude>
+   </node>
+   <node name="aequale">
+    <magnitude><val>30</val></magnitude>
+   </node>
+   <node name="hemmendorffii">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="umbellatum">
+    <magnitude><val>72</val></magnitude>
+   </node>
+   <node name="rhododendrifolium">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="enckea">
+    <magnitude><val>11</val></magnitude>
+   </node>
+   <node name="pseudoarboreum">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="amapense">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="laevigatum">
+    <magnitude><val>15</val></magnitude>
+   </node>
+   <node name="brasiliense">
+    <magnitude><val>23</val></magnitude>
+   </node>
+   <node name="emygdioi">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="diospyrifolium">
+    <magnitude><val>18</val></magnitude>
+   </node>
+   <node name="richardiifolium">
+    <magnitude><val>31</val></magnitude>
+   </node>
+   <node name="permucronatum">
+    <magnitude><val>40</val></magnitude>
+   </node>
+   <node name="plurinervosum">
+    <magnitude><val>11</val></magnitude>
+   </node>
+   <node name="solmsianum">
+    <magnitude><val>116</val></magnitude>
+   </node>
+   <node name="chimonanthifolium">
+    <magnitude><val>29</val></magnitude>
+   </node>
+   <node name="mosenii">
+    <magnitude><val>23</val></magnitude>
+   </node>
+   <node name="gaudichaudianum">
+    <magnitude><val>384</val></magnitude>
+   </node>
+   <node name="peltata">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="nigrispicum">
+    <magnitude><val>22</val></magnitude>
+   </node>
+   <node name="stellipilum">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="regnellii">
+    <magnitude><val>120</val></magnitude>
+   </node>
+   <node name="limai">
+    <magnitude><val>12</val></magnitude>
+   </node>
+   <node name="piresii">
+    <magnitude><val>37</val></magnitude>
+   </node>
+   <node name="heterophyllum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="lhotzkianum">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="francovilleanum">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="fonteboanum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="krukoffii">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="crassinervium">
+    <magnitude><val>126</val></magnitude>
+   </node>
+   <node name="alnoides">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="rupununianum">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="tuberculatum">
+    <magnitude><val>160</val></magnitude>
+   </node>
+   <node name="grande">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="tridentipilum">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="dumosum">
+    <magnitude><val>53</val></magnitude>
+   </node>
+   <node name="bowiei">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="javariense">
+    <magnitude><val>11</val></magnitude>
+   </node>
+   <node name="uleanum">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="coccoloboides">
+    <magnitude><val>21</val></magnitude>
+   </node>
+   <node name="cuyabanum">
+    <magnitude><val>56</val></magnitude>
+   </node>
+   <node name="amplum">
+    <magnitude><val>122</val></magnitude>
+   </node>
+   <node name="schenkii">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="demeraranum">
+    <magnitude><val>58</val></magnitude>
+   </node>
+   <node name="belterraense">
+    <magnitude><val>12</val></magnitude>
+   </node>
+   <node name="obliquum">
+    <magnitude><val>67</val></magnitude>
+   </node>
+   <node name="mastersianum">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="marginatum">
+    <magnitude><val>56</val></magnitude>
+   </node>
+   <node name="cililimbum">
+    <magnitude><val>8</val></magnitude>
+   </node>
+   <node name="monostigmum">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="subsilvestre">
+    <magnitude><val>14</val></magnitude>
+   </node>
+   <node name="caldense">
+    <magnitude><val>167</val></magnitude>
+   </node>
+   <node name="reticulatum">
+    <magnitude><val>37</val></magnitude>
+   </node>
+   <node name="gurupanum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="anonifolium">
+    <magnitude><val>84</val></magnitude>
+   </node>
+   <node name="alatabaccum">
+    <magnitude><val>28</val></magnitude>
+   </node>
+   <node name="concinnatoris">
+    <magnitude><val>13</val></magnitude>
+   </node>
+   <node name="malacophyllum">
+    <magnitude><val>53</val></magnitude>
+   </node>
+   <node name="durilignum">
+    <magnitude><val>23</val></magnitude>
+   </node>
+   <node name="humaytanum">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="froesii">
+    <magnitude><val>11</val></magnitude>
+   </node>
+   <node name="peltatum">
+    <magnitude><val>54</val></magnitude>
+   </node>
+   <node name="amalago">
+    <magnitude><val>286</val></magnitude>
+   </node>
+   <node name="grazielae">
+    <magnitude><val>202</val></magnitude>
+   </node>
+   <node name="mollipilosum">
+    <magnitude><val>12</val></magnitude>
+   </node>
+   <node name="schottii">
+    <magnitude><val>6</val></magnitude>
+   </node>
+   <node name="aduncum">
+    <magnitude><val>377</val></magnitude>
+   </node>
+   <node name="manausense">
+    <magnitude><val>62</val></magnitude>
+   </node>
+   <node name="nudilimbum">
+    <magnitude><val>10</val></magnitude>
+   </node>
+   <node name="cunninghamii">
+    <magnitude><val>5</val></magnitude>
+   </node>
+   <node name="chavicoide">
+    <magnitude><val>9</val></magnitude>
+   </node>
+   <node name="erectipilum">
+    <magnitude><val>46</val></magnitude>
+   </node>
+   <node name="glabrescens">
+    <magnitude><val>37</val></magnitude>
+   </node>
+   <node name="longipes">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="fuligineum">
+    <magnitude><val>177</val></magnitude>
+   </node>
+   <node name="glabratum">
+    <magnitude><val>132</val></magnitude>
+   </node>
+   <node name="hayneanum">
+    <magnitude><val>19</val></magnitude>
+   </node>
+   <node name="duckei">
+    <magnitude><val>7</val></magnitude>
+   </node>
+   <node name="miquelianum">
+    <magnitude><val>187</val></magnitude>
+   </node>
+   <node name="lucaeanum">
+    <magnitude><val>33</val></magnitude>
+   </node>
   </node>
  </node>
 </node>
