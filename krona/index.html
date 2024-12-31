@@ -6554,7 +6554,8 @@ function updateView()
 	}
 	
 	fontSizeText.innerHTML = fontSize;
-	fontNormal = fontSize + 'px ' + fontFamily;
+	// fontNormal = fontSize + 'px ' + fontFamily;
+	fontNormal = 'italic ' + fontSize + 'px ' + fontFamily;
 	context.font = fontNormal;
 	fontBold = 'bold ' + fontSize + 'px ' + fontFamily;
 	tickLength = fontSize * .7;
